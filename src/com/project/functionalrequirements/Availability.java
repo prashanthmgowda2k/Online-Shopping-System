@@ -1,19 +1,23 @@
 package com.project.functionalrequirements;
 
 public class Availability {
-	
-	public static final Availability IN_STOCK = null;
-	private boolean inStock;
-	private int quantity;
-	Product id;
-	
-	public Availability(Product id, boolean inStock, int quantity) {
-		super();
-		this.inStock = inStock;
-		this.quantity = quantity;
-		
-	}
+    private final boolean inStock;
+    private final int quantity;
+
+    public Availability(boolean inStock, int quantity) {
+        this.inStock = inStock;
+        this.quantity = quantity;
+    }
+
+    public boolean isInStock() { 
+    	return inStock; 
+    	}
+    public int getQuantity() { 
+    	return quantity; 
+    	}
+}
+
 	
 	
 
-}
+

@@ -4,18 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Image {
-	
-	Product product;
-	String ulr;
+    private String url;
 
-	public Image(String ulr) {
-		super();
-		this.ulr = ulr;
-		product.imgList.add(this);
-	}
-	
-	
-	
+    public Image(String url) {
+        this.url = url;
+    }
+
+    public String getUrl() { 
+    	return url; 
+    	}
 }
-
 
