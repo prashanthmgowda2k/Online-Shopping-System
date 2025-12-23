@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/products")
@@ -56,9 +58,26 @@ public class ProductController {
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id,asc") String[] sort) {
 
-        Pageable pageable = PageRequest.of(page, size);
+
+
+
+//        GET /api/products?sort=price,asc
+//        GET /api/products?sort=price,desc
+//        GET /api/products?sort=name,asc
+//        GET /api/products?categoryId=1&sort=price,desc
+
+        Sort sortObj = Sort.by(
+                Arrays.stream(sort)
+                        .map(s -> s.split(","))
+                        .map(arr -> new Sort.Order(
+                                Sort.Direction.fromString(arr[1]), arr[0]))
+                        .toList()
+        );
+
+        Pageable pageable = PageRequest.of(page, size, sortObj);
 
         return ResponseEntity.ok(
                 productService.searchProducts(
