@@ -6,4 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface CategoryRepository extends JpaRepository<Category,Long> {
     boolean existsByName(String name);
+    boolean existsByParentCategory(Category category);
 }

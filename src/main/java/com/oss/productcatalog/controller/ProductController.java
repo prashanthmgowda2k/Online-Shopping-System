@@ -13,9 +13,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.web.PageableDefault;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -44,40 +46,28 @@ public class ProductController {
     // GET ALL PRODUCTS (Pagination)
     @GetMapping("/all")
     public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "price",
+                    direction = Sort.Direction.ASC
+            ) Pageable pageable) {
 
-        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
+
+//    GET /api/products
+//    GET /api/products?page=0&size=5
+//    GET /api/products?sort=price,asc
+//    GET /api/products?page=1&size=10&sort=name,desc
     @GetMapping
     public ResponseEntity<Page<ProductResponseDto>> searchProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id,asc") String[] sort) {
-
-
-
-
-//        GET /api/products?sort=price,asc
-//        GET /api/products?sort=price,desc
-//        GET /api/products?sort=name,asc
-//        GET /api/products?categoryId=1&sort=price,desc
-
-        Sort sortObj = Sort.by(
-                Arrays.stream(sort)
-                        .map(s -> s.split(","))
-                        .map(arr -> new Sort.Order(
-                                Sort.Direction.fromString(arr[1]), arr[0]))
-                        .toList()
-        );
-
-        Pageable pageable = PageRequest.of(page, size, sortObj);
+            Pageable pageable) {
 
         return ResponseEntity.ok(
                 productService.searchProducts(
