@@ -20,7 +20,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     // CREATE CATEGORY
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Category> createCategory(
             @Valid @RequestBody CategoryRequestDto dto) {
