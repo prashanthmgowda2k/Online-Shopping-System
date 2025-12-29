@@ -1,6 +1,7 @@
 package com.oss.productcatalog.service;
 
 import com.oss.productcatalog.DTO.CategoryRequestDto;
+import com.oss.productcatalog.DTO.CategoryResponseDto;
 import com.oss.productcatalog.entity.Category;
 import com.oss.productcatalog.exception.ResourceNotFoundException;
 import com.oss.productcatalog.repository.CategoryRepository;
@@ -29,8 +30,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryResponseDto> getAllCategories() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(cat -> new CategoryResponseDto(
+                        cat.getId(),
+                        cat.getName()
+                ))
+                .toList();
     }
 
     public Category getCategoryById(Long id) {

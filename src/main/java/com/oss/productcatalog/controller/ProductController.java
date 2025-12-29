@@ -28,7 +28,7 @@ public class ProductController {
     private final ProductService productService;
 
     // CREATE PRODUCT (Admin)
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseEntity<ProductResponseDto> createProduct(
             @Valid @RequestBody ProductRequestDto dto) {
 
@@ -44,8 +44,31 @@ public class ProductController {
     }
 
     // GET ALL PRODUCTS (Pagination)
-    @GetMapping("/all")
-    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
+//    @GetMapping("/all")
+//    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
+//            @PageableDefault(
+//                    page = 0,
+//                    size = 10,
+//                    sort = "price",
+//                    direction = Sort.Direction.ASC
+//            ) Pageable pageable) {
+//
+//        return ResponseEntity.ok(productService.getAllProducts(pageable));
+//    }
+
+
+//    GET /api/products
+//    GET /api/products?page=0&size=5
+//    GET /api/products?sort=price,asc
+//    GET /api/products?page=1&size=10&sort=name,desc
+
+    @GetMapping
+    public ResponseEntity<Page<ProductResponseDto>> searchProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Boolean inStock,
             @PageableDefault(
                     page = 0,
                     size = 10,
@@ -53,27 +76,28 @@ public class ProductController {
                     direction = Sort.Direction.ASC
             ) Pageable pageable) {
 
-        return ResponseEntity.ok(productService.getAllProducts(pageable));
-    }
-
-
-//    GET /api/products
-//    GET /api/products?page=0&size=5
-//    GET /api/products?sort=price,asc
-//    GET /api/products?page=1&size=10&sort=name,desc
-    @GetMapping
-    public ResponseEntity<Page<ProductResponseDto>> searchProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            Pageable pageable) {
-
         return ResponseEntity.ok(
                 productService.searchProducts(
-                        name, categoryId, minPrice, maxPrice, pageable
+                        name, categoryId, minPrice, maxPrice, inStock, pageable
                 )
         );
     }
+
+
+
+//    @GetMapping
+//    public ResponseEntity<Page<ProductResponseDto>> searchProducts(
+//            @RequestParam(required = false) String name,
+//            @RequestParam(required = false) Long categoryId,
+//            @RequestParam(required = false) BigDecimal minPrice,
+//            @RequestParam(required = false) BigDecimal maxPrice,
+//            Pageable pageable) {
+//
+//        return ResponseEntity.ok(
+//                productService.searchProducts(
+//                        name, categoryId, minPrice, maxPrice, pageable
+//                )
+//        );
+//    }
 }
 

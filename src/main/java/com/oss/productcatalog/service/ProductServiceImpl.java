@@ -9,6 +9,7 @@ import com.oss.productcatalog.repository.ProductRepository;
 import com.oss.productcatalog.repository.spec.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -28,15 +29,36 @@ public class ProductServiceImpl implements ProductService {
             Long categoryId,
             BigDecimal minPrice,
             BigDecimal maxPrice,
+            Boolean inStock,
             Pageable pageable) {
 
-        Specification<Product> spec =
+        if (minPrice != null && maxPrice != null &&
+                minPrice.compareTo(maxPrice) > 0) {
+            throw new IllegalArgumentException(
+                    "minPrice cannot be greater than maxPrice"
+            );
+        }
+
+        int pageSize = pageable.getPageSize();
+        if (pageSize > 50) {
+            pageSize = 50;
+        }
+
+        Pageable safePageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageSize,
+                pageable.getSort()
+        );
+
+        Specification<Product> specification =
                 ProductSpecification.search(
                         name, categoryId, minPrice, maxPrice
-                );
+                ).and(ProductSpecification.hasStock(inStock));
 
-        return productRepository.findAll(spec, pageable)
-                .map(this::mapToDto);
+        Page<Product> productPage =
+                productRepository.findAll(specification, safePageable);
+
+        return productPage.map(this::mapToProductResponseDto);
     }
 
     @Override
@@ -93,5 +115,29 @@ public class ProductServiceImpl implements ProductService {
         dto.setCategoryName(product.getCategory().getName());
         return dto;
     }
+    private ProductResponseDto mapToProductResponseDto(Product product) {
+
+        return ProductResponseDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .brand(product.getBrand())
+                .price(product.getPrice())
+                .quantity(product.getQuantity())
+                .averageRating(product.getAverageRating())
+                .reviewCount(product.getReviewCount())
+                .categoryId(
+                        product.getCategory() != null
+                                ? product.getCategory().getId()
+                                : null
+                )
+                .categoryName(
+                        product.getCategory() != null
+                                ? product.getCategory().getName()
+                                : null
+                )
+                .build();
+    }
+
 }
 

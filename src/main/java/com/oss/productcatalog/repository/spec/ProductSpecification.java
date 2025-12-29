@@ -48,4 +48,17 @@ public class ProductSpecification {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+
+    public static Specification<Product> hasStock(Boolean inStock) {
+        return (root, query, cb) -> {
+            if (inStock == null) {
+                return cb.conjunction();
+            }
+            if (inStock) {
+                return cb.greaterThan(root.get("quantity"), 0);
+            } else {
+                return cb.equal(root.get("quantity"), 0);
+            }
+        };
+    }
 }

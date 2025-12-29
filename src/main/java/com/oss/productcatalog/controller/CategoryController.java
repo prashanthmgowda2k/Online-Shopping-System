@@ -1,6 +1,7 @@
 package com.oss.productcatalog.controller;
 
 import com.oss.productcatalog.DTO.CategoryRequestDto;
+import com.oss.productcatalog.DTO.CategoryResponseDto;
 import com.oss.productcatalog.entity.Category;
 import com.oss.productcatalog.service.CategoryService;
 import jakarta.validation.Valid;
@@ -31,7 +32,7 @@ public class CategoryController {
 
     // GET ALL CATEGORIES
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 

@@ -20,6 +20,7 @@ public interface ProductService {
             Long categoryId,
             BigDecimal minPrice,
             BigDecimal maxPrice,
+            Boolean inStock,
             Pageable pageable
     );
 }
