@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: GatewayService
+
+  cloud:
+    gateway:
+      routes:
+        - id: ProductCatalogService
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/categories/**,/api/products/**
+        - id: inventoryservice
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/inventory/**
+        - id: orderservice
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/cart/**,/api/order/**
+        - id: userservice
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/user/**
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8443/realms/OSS
+
+
+server:
+  port: 8085
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ecomBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: 2s
+        slidingWindowType: count_based
+
